@@ -7,6 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class StartCommandHandler implements CommandHandler {
@@ -24,11 +25,11 @@ public class StartCommandHandler implements CommandHandler {
 
         KeyboardRow row1 = new KeyboardRow();
 
-        KeyboardButton btn1 = new KeyboardButton("button 1");
+        KeyboardButton categories = new KeyboardButton("Categories");
 
         KeyboardButton btn2 = new KeyboardButton("button 2");
 
-        row1.add(btn1);
+        row1.add(categories);
         row1.add(btn2);
 
         KeyboardRow row2 = new KeyboardRow();
@@ -44,13 +45,16 @@ public class StartCommandHandler implements CommandHandler {
 
         row3.add(btn5);
 
+        List<KeyboardRow> keyboard = new ArrayList<>();
+        keyboard.add(row1);
+        keyboard.add(row2);
+        keyboard.add(row3);
 
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
-        keyboardMarkup.setKeyboard(List.of(row1, row2, row3));
+        keyboardMarkup.setKeyboard(keyboard);
         keyboardMarkup.setResizeKeyboard(true);
 
         sendMessage.setReplyMarkup(keyboardMarkup);
-
 
         try {
             Market_Bot bot = new Market_Bot();
