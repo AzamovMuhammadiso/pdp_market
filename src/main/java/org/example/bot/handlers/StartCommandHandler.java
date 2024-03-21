@@ -15,9 +15,13 @@ public class StartCommandHandler implements CommandHandler {
     public void handleCommand(Message message) {
         Long chatId = message.getChatId();
 
-        String response = "Bizning onlayn do'konga xush kelibsiz! 🎉\n" +
-                "Sizni ko'rishdan xursandmiz va sizni xarid qilishda yordam berishga tayyormiz. 💼\n " + "\n" +
-                "Ishonchli va qulay xaridlar! 💳";
+        String response = """
+                Bizning telegram do'konimizga xush kelibsiz! 🎉
+                Mijozimiz ekanligingizdan xursandmiz 😊 
+                Xarid qilmoqchi bo`lgan mahsulotingizni topishda yozdam beramiz 🛒🛒🛒 
+                Ishonchli va qulay xaridlar! 💳
+                
+                """;
 
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
