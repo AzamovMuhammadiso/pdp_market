@@ -27,6 +27,19 @@ public class StartCommandHandler implements CommandHandler {
         sendMessage.setChatId(chatId);
         sendMessage.setText(response);
 
+        ReplyKeyboardMarkup keyboardMarkup = getReplyKeyboardMarkup();
+
+        sendMessage.setReplyMarkup(keyboardMarkup);
+
+        try {
+            Market_Bot bot = new Market_Bot();
+            bot.execute(sendMessage);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static ReplyKeyboardMarkup getReplyKeyboardMarkup() {
         KeyboardRow row1 = new KeyboardRow();
 
         KeyboardButton categories = new KeyboardButton("Categories");
@@ -57,14 +70,6 @@ public class StartCommandHandler implements CommandHandler {
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
         keyboardMarkup.setKeyboard(keyboard);
         keyboardMarkup.setResizeKeyboard(true);
-
-        sendMessage.setReplyMarkup(keyboardMarkup);
-
-        try {
-            Market_Bot bot = new Market_Bot();
-            bot.execute(sendMessage);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        return keyboardMarkup;
     }
 }
