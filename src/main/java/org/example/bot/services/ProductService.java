@@ -1,15 +1,21 @@
 package org.example.bot.services;
 
+import org.example.bot.model.Product;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ProductService {
-    // Map to store product categories and their respective products
-    private final Map<String, Map<String, ProductInfo>> productCategories;
+    private Map<String, List<Product>> productCategories;
 
     public ProductService() {
         productCategories = new HashMap<>();
+        initializeProducts();
+    }
 
+    private void initializeProducts() {
         addCategory("Clothing");
         addProduct("Clothing", "T-Shirt", "Comfortable cotton t-shirt", 19.99, "https://example.com/t-shirt.jpg");
         addProduct("Clothing", "Jeans", "Classic denim jeans", 39.99, "https://example.com/jeans.jpg");
@@ -43,42 +49,25 @@ public class ProductService {
         addProduct("Books", "Cookbook", "Collection of delicious recipes for home cooking", 19.99, "https://example.com/cookbook.jpg");
     }
 
-    private void addCategory(String categoryName) {
-        productCategories.put(categoryName, new HashMap<>());
-    }
-
-    private void addProduct(String categoryName, String productName, String description, double price, String imageUrl) {
-        Map<String, ProductInfo> categoryProducts = productCategories.get(categoryName);
-        if (categoryProducts != null) {
-            categoryProducts.put(productName, new ProductInfo(description, price, imageUrl));
+    private void addCategory(String category) {
+        if (!productCategories.containsKey(category)) {
+            productCategories.put(category, new ArrayList<>());
         }
     }
-    public Map<String, ProductInfo> getCategoryProducts(String categoryName) {
-        return productCategories.get(categoryName);
+
+    private void addProduct(String category, String name, String description, double price, String imageUrl) {
+        List<Product> products = productCategories.get(category);
+        if (products != null) {
+            products.add(new Product(name, description, price, imageUrl));
+        }
     }
 
-    private static class ProductInfo {
-        private final String description;
-        private final double price;
-        private final String imageUrl;
+    public List<String> getProductCategories() {
+        return new ArrayList<>(productCategories.keySet());
+    }
 
-        public ProductInfo(String description, double price, String imageUrl) {
-            this.description = description;
-            this.price = price;
-            this.imageUrl = imageUrl;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-
-        public double getPrice() {
-            return price;
-        }
-
-        public String getImageUrl() {
-            return imageUrl;
-        }
+    public List<Product> getProductsForCategory(String category) {
+        return productCategories.getOrDefault(category, new ArrayList<>());
     }
 
 }
