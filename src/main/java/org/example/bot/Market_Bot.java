@@ -24,7 +24,6 @@ public class Market_Bot extends TelegramLongPollingBot {
             String text = message.getText();
             Long chatId = message.getChatId();
 
-            // Log the received message
             System.out.println("Received message: " + text);
 
             if (text.equals("/start")) {
