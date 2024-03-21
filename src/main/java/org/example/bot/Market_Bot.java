@@ -35,7 +35,10 @@ public class Market_Bot extends TelegramLongPollingBot {
                 handler.handleCommand(message);
             } else if (text.equals("Categories")) {
                 sendProductButtons(chatId);
+            }else if (text.equals("Clothing")) {
+
             }
+
         }
     }
 
