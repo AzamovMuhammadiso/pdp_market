@@ -1,5 +1,8 @@
 package org.example.bot;
 
+import org.example.bot.handlers.CommandHandler;
+import org.example.bot.handlers.HelpCommandHandler;
+import org.example.bot.handlers.StartCommandHandler;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -8,17 +11,26 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 
 public class Market_Bot extends TelegramLongPollingBot{
 
+
     @Override
     public void onUpdateReceived(Update update) {
-        Message message =update.getMessage();
-        String text = message.getText();
-        SendMessage sendMessage = new SendMessage();
+        if (update.hasMessage() && update.getMessage().hasText()) {
+            Message message = update.getMessage();
+            String text = message.getText();
+            Long chatId = message.getChatId();
 
-        if(text.equals("/start")){
-            KeyboardRow row1 =new KeyboardRow();
+            // Log the received message
+            System.out.println("Received message:): " + text);
 
+            if (text.equals("/start")) {
+                CommandHandler handler = new StartCommandHandler();
+                handler.handleCommand(message);
+            } else if (text.equals("/help")) {
+                CommandHandler handler = new HelpCommandHandler();
+                handler.handleCommand(message);
+            }
+            // Add more else if conditions for other commands
         }
-
     }
 
     @Override
