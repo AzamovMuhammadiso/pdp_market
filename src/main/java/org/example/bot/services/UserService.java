@@ -7,7 +7,6 @@ public class UserService {
     private Map<Long, String> userPreferences;
 
     public UserService() {
-        // Initialize the map
         userPreferences = new HashMap<>();
     }
 

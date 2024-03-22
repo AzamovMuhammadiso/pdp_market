@@ -1,8 +1,9 @@
 package org.example.bot;
-
 import org.example.bot.handlers.CommandHandler;
 import org.example.bot.handlers.HelpCommandHandler;
 import org.example.bot.handlers.StartCommandHandler;
+import org.example.bot.model.Product;
+import org.example.bot.services.ProductService;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -34,10 +35,37 @@ public class Market_Bot extends TelegramLongPollingBot {
                 handler.handleCommand(message);
             } else if (text.equals("Categories")) {
                 sendProductButtons(chatId);
-            }else if (text.equals("Clothing")) {
-
+            } else if (text.equals("Clothes")) {
+                sendClothing(chatId);
             }
+        }
+    }
 
+    private void sendClothing(Long chatId) {
+        ProductService productService = new ProductService();
+
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+
+        List<Product> clothingProducts = productService.getProductsForCategory("Clothing");
+        StringBuilder response = new StringBuilder("Here are the available clothing products:\n");
+
+        for (Product product : clothingProducts) {
+            response.append("\nName: ").append(product.getName())
+                    .append("\nDescription: ").append(product.getDescription())
+                    .append("\nPrice: $").append(product.getPrice())
+                    .append("\nImage: ").append(product.getImageUrl())
+                    .append("\n\n");
+        }
+
+        sendMessage.setText(response.toString());
+        System.out.println("Sent: " + response.toString());
+        System.out.println("Sent: " + response);
+
+        try {
+            execute(sendMessage);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
         }
     }
 
@@ -48,9 +76,8 @@ public class Market_Bot extends TelegramLongPollingBot {
         String response = "Please select a category:";
         sendMessage.setText(response);
 
-        // Create keyboard rows for product categories
         KeyboardRow row1 = new KeyboardRow();
-        row1.add(new KeyboardButton("Clothing"));
+        row1.add(new KeyboardButton("Clothes"));
         row1.add(new KeyboardButton("Food"));
 
         KeyboardRow row2 = new KeyboardRow();
@@ -65,7 +92,6 @@ public class Market_Bot extends TelegramLongPollingBot {
         row4.add(new KeyboardButton("Sports & Recreation"));
         row4.add(new KeyboardButton("Books"));
 
-        // Add keyboard rows to markup
         List<KeyboardRow> keyboard = new ArrayList<>();
         keyboard.add(row1);
         keyboard.add(row2);

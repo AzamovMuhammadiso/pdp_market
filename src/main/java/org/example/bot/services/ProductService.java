@@ -9,6 +9,7 @@ import java.util.Map;
 
 public class ProductService {
     private Map<String, List<Product>> productCategories;
+    private Map<String, Integer> productCategoryCounts;
 
     public ProductService() {
         productCategories = new HashMap<>();
@@ -47,11 +48,16 @@ public class ProductService {
         addCategory("Books");
         addProduct("Books", "Bestseller Novel", "Exciting novel that keeps you hooked till the end", 14.99, "https://example.com/novel.jpg");
         addProduct("Books", "Cookbook", "Collection of delicious recipes for home cooking", 19.99, "https://example.com/cookbook.jpg");
+        for (String category : productCategories.keySet()) {
+            List<Product> products = productCategories.get(category);
+            productCategoryCounts.put(category, products.size());
+        }
     }
 
     private void addCategory(String category) {
         if (!productCategories.containsKey(category)) {
             productCategories.put(category, new ArrayList<>());
+            productCategoryCounts.put(category, 0); // Initialize count to 0
         }
     }
 
@@ -59,15 +65,17 @@ public class ProductService {
         List<Product> products = productCategories.get(category);
         if (products != null) {
             products.add(new Product(name, description, price, imageUrl));
+            productCategoryCounts.put(category, products.size());
         }
     }
 
-    public List<String> getProductCategories() {
-        return new ArrayList<>(productCategories.keySet());
-    }
 
     public List<Product> getProductsForCategory(String category) {
         return productCategories.getOrDefault(category, new ArrayList<>());
+    }
+
+    public int getProductCountForCategory(String category) {
+        return productCategoryCounts.getOrDefault(category, 0);
     }
 
 }
