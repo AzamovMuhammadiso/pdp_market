@@ -424,11 +424,11 @@ public class Market_Bot extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return "javahandler_bot";
+        return "pdp_online_market_bot";
     }
 
     @Override
     public String getBotToken() {
-        return "6418828734:AAGY2_c8qdBwNVEYzNrQEG0_arNXMnlATuU";
+        return "6856693785:AAEFOqWNDhPKYc0usVfZyqANPVxuCiOJ_2M";
     }
 }
