@@ -42,7 +42,7 @@ public class StartCommandHandler implements CommandHandler {
     private static ReplyKeyboardMarkup getReplyKeyboardMarkup() {
         KeyboardRow row1 = new KeyboardRow();
 
-        KeyboardButton categories = new KeyboardButton("Categories");
+        KeyboardButton categories = new KeyboardButton("\uD83D\uDDC2\uFE0F Categories");
 
         KeyboardButton btn2 = new KeyboardButton("button 2");
 

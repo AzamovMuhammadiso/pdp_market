@@ -1,10 +1,12 @@
 package org.example.bot;
+
 import org.example.bot.handlers.CommandHandler;
 import org.example.bot.handlers.HelpCommandHandler;
 import org.example.bot.handlers.StartCommandHandler;
 import org.example.bot.model.Product;
 import org.example.bot.services.ProductService;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -33,16 +35,16 @@ public class Market_Bot extends TelegramLongPollingBot {
             } else if (text.equals("/help")) {
                 CommandHandler handler = new HelpCommandHandler();
                 handler.handleCommand(message);
-            } else if (text.equals("Categories")) {
+            } else if (text.contains("Categories")) {
                 sendProductButtons(chatId);
-            } else if (text.equals("Clothes")) {
+            } else if (text.contains("Clothes")) {
                 sendClothing(chatId);
             }
         }
     }
 
     private void sendClothing(Long chatId) {
-        ProductService productService = new ProductService();
+      try{  ProductService productService = new ProductService();
 
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
@@ -59,15 +61,20 @@ public class Market_Bot extends TelegramLongPollingBot {
         }
 
         sendMessage.setText(response.toString());
-        System.out.println("Sent: " + response.toString());
-        System.out.println("Sent: " + response);
+        System.out.println("Jo'natildi: " + response.toString());
 
         try {
             execute(sendMessage);
-        } catch (TelegramApiException e) {
+            Thread.sleep(1000);
+        } catch (Exception e) {
             e.printStackTrace();
         }
+      }catch (Exception e){
+          e.printStackTrace();
+      }
     }
+
+
 
     private void sendProductButtons(Long chatId) {
         SendMessage sendMessage = new SendMessage();
@@ -77,26 +84,30 @@ public class Market_Bot extends TelegramLongPollingBot {
         sendMessage.setText(response);
 
         KeyboardRow row1 = new KeyboardRow();
-        row1.add(new KeyboardButton("Clothes"));
-        row1.add(new KeyboardButton("Food"));
+        row1.add(new KeyboardButton("\uD83D\uDC55 Clothes"));
+        row1.add(new KeyboardButton("\uD83C\uDF54 Food"));
 
         KeyboardRow row2 = new KeyboardRow();
-        row2.add(new KeyboardButton("Shoes"));
-        row2.add(new KeyboardButton("Electronics"));
+        row2.add(new KeyboardButton("\uD83D\uDC5F Shoes"));
+        row2.add(new KeyboardButton("\uD83D\uDEE0\uFE0F  Electronics"));
 
         KeyboardRow row3 = new KeyboardRow();
-        row3.add(new KeyboardButton("Children's Products"));
-        row3.add(new KeyboardButton("Household Goods"));
+        row3.add(new KeyboardButton("\uD83E\uDDF8 Children's Products"));
+        row3.add(new KeyboardButton("\uD83C\uDFE0 Household Goods"));
 
         KeyboardRow row4 = new KeyboardRow();
-        row4.add(new KeyboardButton("Sports & Recreation"));
-        row4.add(new KeyboardButton("Books"));
+        row4.add(new KeyboardButton("⚽ Sports & Recreation"));
+        row4.add(new KeyboardButton("\uD83D\uDCDA Books"));
+
+//        KeyboardRow row5 = new KeyboardRow();
+//        row5.add(new KeyboardButton("Categories"));
 
         List<KeyboardRow> keyboard = new ArrayList<>();
         keyboard.add(row1);
         keyboard.add(row2);
         keyboard.add(row3);
         keyboard.add(row4);
+//        keyboard.add(row5);
 
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
         keyboardMarkup.setKeyboard(keyboard);
@@ -113,11 +124,11 @@ public class Market_Bot extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return "pdp_online_market_bot";
+        return "javahandler_bot";
     }
 
     @Override
     public String getBotToken() {
-        return "6856693785:AAEFOqWNDhPKYc0usVfZyqANPVxuCiOJ_2M";
+        return "6418828734:AAGY2_c8qdBwNVEYzNrQEG0_arNXMnlATuU";
     }
 }

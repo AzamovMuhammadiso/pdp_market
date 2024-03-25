@@ -13,13 +13,14 @@ public class ProductService {
 
     public ProductService() {
         productCategories = new HashMap<>();
+        productCategoryCounts = new HashMap<>();
         initializeProducts();
     }
 
     private void initializeProducts() {
         addCategory("Clothing");
-        addProduct("Clothing", "T-Shirt", "Comfortable cotton t-shirt", 19.99, "https://example.com/t-shirt.jpg");
-        addProduct("Clothing", "Jeans", "Classic denim jeans", 39.99, "https://example.com/jeans.jpg");
+        addProduct("Clothing", "T-Shirt", "Comfortable cotton t-shirt", 19.99, "https://images.rawpixel.com/image_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIzLTA4L3Jhd3BpeGVsX29mZmljZV8yNV9waG90b19vZl93aGl0ZV9tYWxlX3RzaGlydF9tb2NrdXBfd2hpdGVfdHNoaV85YjNmOWZjZS03MTZkLTQxYmUtODkzZS05MzkwZWY1NmZiZmFfMi5qcGc.jpg");
+        addProduct("Clothing", "Jeans", "Classic denim jeans", 39.99, "https://images.rawpixel.com/image_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIzLTA4L3Jhd3BpeGVsX29mZmljZV8yNV9waG90b19vZl93aGl0ZV9tYWxlX3RzaGlydF9tb2NrdXBfd2hpdGVfdHNoaV85YjNmOWZjZS03MTZkLTQxYmUtODkzZS05MzkwZWY1NmZiZmFfMi5qcGc.jpg");
 
         addCategory("Food");
         addProduct("Food", "Fruit", "Assorted fresh fruits", 2.99, "https://example.com/fruit.jpg");
@@ -57,7 +58,7 @@ public class ProductService {
     private void addCategory(String category) {
         if (!productCategories.containsKey(category)) {
             productCategories.put(category, new ArrayList<>());
-            productCategoryCounts.put(category, 0); // Initialize count to 0
+            productCategoryCounts.put(category, 0);
         }
     }
 
