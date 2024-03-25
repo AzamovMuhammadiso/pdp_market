@@ -8,6 +8,8 @@ import org.example.bot.services.ProductService;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -44,35 +46,31 @@ public class Market_Bot extends TelegramLongPollingBot {
     }
 
     private void sendClothing(Long chatId) {
-      try{  ProductService productService = new ProductService();
-
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(chatId);
-
-        List<Product> clothingProducts = productService.getProductsForCategory("Clothing");
-        StringBuilder response = new StringBuilder("Here are the available clothing products:\n");
-
-        for (Product product : clothingProducts) {
-            response.append("\nName: ").append(product.getName())
-                    .append("\nDescription: ").append(product.getDescription())
-                    .append("\nPrice: $").append(product.getPrice())
-                    .append("\nImage: ").append(product.getImageUrl())
-                    .append("\n\n");
-        }
-
-        sendMessage.setText(response.toString());
-        System.out.println("Jo'natildi: " + response.toString());
-
         try {
-            execute(sendMessage);
-            Thread.sleep(1000);
+            ProductService productService = new ProductService();
+            List<Product> clothingProducts = productService.getProductsForCategory("Clothing");
+
+            for (Product product : clothingProducts) {
+                SendPhoto sendPhoto = new SendPhoto();
+                sendPhoto.setChatId(chatId);
+                sendPhoto.setPhoto(new InputFile(product.getImageUrl()));
+
+                // Construct the caption with product details
+                StringBuilder caption = new StringBuilder();
+                caption.append("<b>Name:</b> ").append(product.getName()).append("\n")
+                        .append("<b>Description:</b> ").append(product.getDescription()).append("\n")
+                        .append("<b>Price:</b> $").append(product.getPrice());
+
+                sendPhoto.setCaption(caption.toString());
+                sendPhoto.setParseMode(ParseMode.HTML);
+
+                execute(sendPhoto);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
-      }catch (Exception e){
-          e.printStackTrace();
-      }
     }
+
 
 
 
