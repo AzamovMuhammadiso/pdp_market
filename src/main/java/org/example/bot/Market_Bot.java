@@ -41,7 +41,121 @@ public class Market_Bot extends TelegramLongPollingBot {
                 sendProductButtons(chatId);
             } else if (text.contains("Clothes")) {
                 sendClothing(chatId);
+            } else if (text.contains("Food")) {
+                sendFood(chatId);
+            } else if (text.contains("Dairy")) {
+                sendDairy(chatId);
+            }else if (text.contains("Cream")) {
+                sendCream(chatId);
             }
+
+        }
+    }
+
+    private void sendCream(Long chatId) {
+        try {
+            ProductService productService = new ProductService();
+            List<Product> clothingProducts = productService.getProductsForCategory("Cream");
+
+            for (Product product : clothingProducts) {
+                SendPhoto sendPhoto = new SendPhoto();
+                sendPhoto.setChatId(chatId);
+                sendPhoto.setPhoto(new InputFile(product.getImageUrl()));
+
+                // Construct the caption with product details
+                StringBuilder caption = new StringBuilder();
+                caption.append("<b>Name:</b> ").append(product.getName()).append("\n")
+                        .append("<b>Description:</b> ").append(product.getDescription()).append("\n")
+                        .append("<b>Price:</b> $").append(product.getPrice());
+
+                sendPhoto.setCaption(caption.toString());
+                sendPhoto.setParseMode(ParseMode.HTML);
+
+                execute(sendPhoto);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void sendDairy(Long chatId) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+
+        String response = "Please select Dairy types:";
+        sendMessage.setText(response);
+
+        KeyboardRow row1 = new KeyboardRow();
+        row1.add(new KeyboardButton("\uD83E\uDD5B Cream"));
+        row1.add(new KeyboardButton("☕\uFE0F Coffee"));
+
+        KeyboardRow row2 = new KeyboardRow();
+        row2.add(new KeyboardButton("\uD83C\uDF68 Ice Cream"));
+        row2.add(new KeyboardButton("\uD83E\uDD5B Milk"));
+
+        KeyboardRow row3 = new KeyboardRow();
+        row3.add(new KeyboardButton("\uD83E\uDDC0 Cheeses"));
+        row3.add(new KeyboardButton("\uD83E\uDDC8 Butter"));
+
+        KeyboardRow row4 = new KeyboardRow();
+        row4.add(new KeyboardButton("\uD83E\uDD63 Yogurt"));
+        row4.add(new KeyboardButton("\uD83C\uDF76 Kefir"));
+
+
+
+        List<KeyboardRow> keyboard = new ArrayList<>();
+        keyboard.add(row1);
+        keyboard.add(row2);
+        keyboard.add(row3);
+        keyboard.add(row4);
+
+        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
+        keyboardMarkup.setKeyboard(keyboard);
+        keyboardMarkup.setResizeKeyboard(true);
+
+        sendMessage.setReplyMarkup(keyboardMarkup);
+
+        try {
+            execute(sendMessage);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void sendFood(Long chatId) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+
+        String response = "Please select food types:";
+        sendMessage.setText(response);
+
+        KeyboardRow row1 = new KeyboardRow();
+        row1.add(new KeyboardButton("\uD83E\uDD5B Dairy"));
+        row1.add(new KeyboardButton("\uD83E\uDD66 Vegetables"));
+
+        KeyboardRow row2 = new KeyboardRow();
+        row2.add(new KeyboardButton("\uD83C\uDF47 Fruits"));
+        row2.add(new KeyboardButton("\uD83C\uDF3E  Grains"));
+
+        KeyboardRow row3 = new KeyboardRow();
+        row3.add(new KeyboardButton("\uD83C\uDF57 Protein"));
+
+
+        List<KeyboardRow> keyboard = new ArrayList<>();
+        keyboard.add(row1);
+        keyboard.add(row2);
+        keyboard.add(row3);
+
+        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
+        keyboardMarkup.setKeyboard(keyboard);
+        keyboardMarkup.setResizeKeyboard(true);
+
+        sendMessage.setReplyMarkup(keyboardMarkup);
+
+        try {
+            execute(sendMessage);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
         }
     }
 
@@ -72,8 +186,6 @@ public class Market_Bot extends TelegramLongPollingBot {
     }
 
 
-
-
     private void sendProductButtons(Long chatId) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
@@ -97,15 +209,11 @@ public class Market_Bot extends TelegramLongPollingBot {
         row4.add(new KeyboardButton("⚽ Sports & Recreation"));
         row4.add(new KeyboardButton("\uD83D\uDCDA Books"));
 
-//        KeyboardRow row5 = new KeyboardRow();
-//        row5.add(new KeyboardButton("Categories"));
-
         List<KeyboardRow> keyboard = new ArrayList<>();
         keyboard.add(row1);
         keyboard.add(row2);
         keyboard.add(row3);
         keyboard.add(row4);
-//        keyboard.add(row5);
 
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
         keyboardMarkup.setKeyboard(keyboard);
