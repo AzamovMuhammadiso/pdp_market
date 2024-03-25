@@ -45,10 +45,205 @@ public class Market_Bot extends TelegramLongPollingBot {
                 sendFood(chatId);
             } else if (text.contains("Dairy")) {
                 sendDairy(chatId);
+            }  else if (text.contains("Coffee")) {
+                sendCoffee(chatId);
+            } else if (text.contains("Ice Cream")) {
+                sendIceCream(chatId);
+            } else if (text.contains("Milk")) {
+                sendMilk(chatId);
+            } else if (text.contains("Cheeses")) {
+                sendCheeses(chatId);
+            } else if (text.contains("Butter")) {
+                sendButter(chatId);
+            } else if (text.contains("Yogurt")) {
+                sendYogurt(chatId);
+            } else if (text.contains("Kefir")) {
+                sendKefir(chatId);
             }else if (text.contains("Cream")) {
                 sendCream(chatId);
             }
+        }
+    }
 
+    private void sendKefir(Long chatId) {
+        try {
+            ProductService productService = new ProductService();
+            List<Product> clothingProducts = productService.getProductsForCategory("Kefir");
+
+            for (Product product : clothingProducts){
+                SendPhoto sendPhoto = new SendPhoto();
+                sendPhoto.setChatId(chatId);
+                sendPhoto.setPhoto(new InputFile(product.getImageUrl()));
+
+                // Construct the caption with product details
+                StringBuilder caption = new StringBuilder();
+                caption.append("<b>Name:</b> ").append(product.getName()).append("\n")
+                        .append("<b>Description:</b> ").append(product.getDescription()).append("\n")
+                        .append("<b>Price:</b> $").append(product.getPrice());
+
+                sendPhoto.setCaption(caption.toString());
+                sendPhoto.setParseMode(ParseMode.HTML);
+
+                execute(sendPhoto);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void sendYogurt(Long chatId) {
+        try {
+            ProductService productService = new ProductService();
+            List<Product> clothingProducts = productService.getProductsForCategory("Yogurt");
+
+            for (Product product : clothingProducts) {
+                SendPhoto sendPhoto = new SendPhoto();
+                sendPhoto.setChatId(chatId);
+                sendPhoto.setPhoto(new InputFile(product.getImageUrl()));
+
+                // Construct the caption with product details
+                StringBuilder caption = new StringBuilder();
+                caption.append("<b>Name:</b> ").append(product.getName()).append("\n")
+                        .append("<b>Description:</b> ").append(product.getDescription()).append("\n")
+                        .append("<b>Price:</b> $").append(product.getPrice());
+
+                sendPhoto.setCaption(caption.toString());
+                sendPhoto.setParseMode(ParseMode.HTML);
+
+                execute(sendPhoto);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void sendButter(Long chatId) {
+        try {
+            ProductService productService = new ProductService();
+            List<Product> clothingProducts = productService.getProductsForCategory("Butter");
+
+            for (Product product : clothingProducts) {
+                SendPhoto sendPhoto = new SendPhoto();
+                sendPhoto.setChatId(chatId);
+                sendPhoto.setPhoto(new InputFile(product.getImageUrl()));
+
+                // Construct the caption with product details
+                StringBuilder caption = new StringBuilder();
+                caption.append("<b>Name:</b> ").append(product.getName()).append("\n")
+                        .append("<b>Description:</b> ").append(product.getDescription()).append("\n")
+                        .append("<b>Price:</b> $").append(product.getPrice());
+
+                sendPhoto.setCaption(caption.toString());
+                sendPhoto.setParseMode(ParseMode.HTML);
+
+                execute(sendPhoto);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void sendCheeses(Long chatId) {
+        try {
+            ProductService productService = new ProductService();
+            List<Product> clothingProducts = productService.getProductsForCategory("Cheeses");
+
+            for (Product product : clothingProducts) {
+                SendPhoto sendPhoto = new SendPhoto();
+                sendPhoto.setChatId(chatId);
+                sendPhoto.setPhoto(new InputFile(product.getImageUrl()));
+
+                // Construct the caption with product details
+                StringBuilder caption = new StringBuilder();
+                caption.append("<b>Name:</b> ").append(product.getName()).append("\n")
+                        .append("<b>Description:</b> ").append(product.getDescription()).append("\n")
+                        .append("<b>Price:</b> $").append(product.getPrice());
+
+                sendPhoto.setCaption(caption.toString());
+                sendPhoto.setParseMode(ParseMode.HTML);
+
+                execute(sendPhoto);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void sendMilk(Long chatId) {
+        try {
+            ProductService productService = new ProductService();
+            List<Product> clothingProducts = productService.getProductsForCategory("Milk");
+
+            for (Product product : clothingProducts) {
+                SendPhoto sendPhoto = new SendPhoto();
+                sendPhoto.setChatId(chatId);
+                sendPhoto.setPhoto(new InputFile(product.getImageUrl()));
+
+                // Construct the caption with product details
+                StringBuilder caption = new StringBuilder();
+                caption.append("<b>Name:</b> ").append(product.getName()).append("\n")
+                        .append("<b>Description:</b> ").append(product.getDescription()).append("\n")
+                        .append("<b>Price:</b> $").append(product.getPrice());
+
+                sendPhoto.setCaption(caption.toString());
+                sendPhoto.setParseMode(ParseMode.HTML);
+
+                execute(sendPhoto);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void sendIceCream(Long chatId) {
+        try {
+            ProductService productService = new ProductService();
+            List<Product> clothingProducts = productService.getProductsForCategory("Ice Cream");
+
+            for (Product product : clothingProducts) {
+                SendPhoto sendPhoto = new SendPhoto();
+                sendPhoto.setChatId(chatId);
+                sendPhoto.setPhoto(new InputFile(product.getImageUrl()));
+
+                // Construct the caption with product details
+                StringBuilder caption = new StringBuilder();
+                caption.append("<b>Name:</b> ").append(product.getName()).append("\n")
+                        .append("<b>Description:</b> ").append(product.getDescription()).append("\n")
+                        .append("<b>Price:</b> $").append(product.getPrice());
+
+                sendPhoto.setCaption(caption.toString());
+                sendPhoto.setParseMode(ParseMode.HTML);
+
+                execute(sendPhoto);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void sendCoffee(Long chatId) {
+        try {
+            ProductService productService = new ProductService();
+            List<Product> clothingProducts = productService.getProductsForCategory("Coffee");
+
+            for (Product product : clothingProducts) {
+                SendPhoto sendPhoto = new SendPhoto();
+                sendPhoto.setChatId(chatId);
+                sendPhoto.setPhoto(new InputFile(product.getImageUrl()));
+
+                // Construct the caption with product details
+                StringBuilder caption = new StringBuilder();
+                caption.append("<b>Name:</b> ").append(product.getName()).append("\n")
+                        .append("<b>Description:</b> ").append(product.getDescription()).append("\n")
+                        .append("<b>Price:</b> $").append(product.getPrice());
+
+                sendPhoto.setCaption(caption.toString());
+                sendPhoto.setParseMode(ParseMode.HTML);
+
+                execute(sendPhoto);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -100,7 +295,6 @@ public class Market_Bot extends TelegramLongPollingBot {
         KeyboardRow row4 = new KeyboardRow();
         row4.add(new KeyboardButton("\uD83E\uDD63 Yogurt"));
         row4.add(new KeyboardButton("\uD83C\uDF76 Kefir"));
-
 
 
         List<KeyboardRow> keyboard = new ArrayList<>();

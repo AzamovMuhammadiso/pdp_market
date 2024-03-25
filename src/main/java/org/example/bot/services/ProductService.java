@@ -27,10 +27,10 @@ public class ProductService {
         addProduct("Cream", "Fruit", "Assorted fresh fruits", 2.99, "https://b2b.swissbake.ch/images/product/SB-WHIPPING-CREAM-POWDER-1kgBag-Prod81-5-0102230555291.png");
 
         addCategory("Coffee");
-        addProduct("Dairy", "Fruit", "Assorted fresh fruits", 5.99, "https://www.gfbfood.com.my/wp-content/uploads/2020/03/inline_image_preview-1.jpg");
+        addProduct("Coffee", "Fruit", "Assorted fresh fruits", 5.99, "https://www.gfbfood.com.my/wp-content/uploads/2020/03/inline_image_preview-1.jpg");
 
         addCategory("Ice Cream");
-        addProduct("Ice Cream", "Fruit", "Assorted fresh fruits", 5.99, "https://cdn.britannica.com/50/80550-050-5D392AC7/Scoops-kinds-ice-cream.jpg");
+        addProduct("Ice Cream", "Fruit", "Assorted fresh fruits", 5.99, "https://images.pexels.com/photos/1362534/pexels-photo-1362534.jpeg?cs=srgb&dl=pexels-teejay-1362534.jpg&fm=jpg");
 
         addCategory("Milk");
         addProduct("Milk", "Milk", "Assorted fresh fruits", 5.99, "https://static.wikia.nocookie.net/phobia/images/8/82/Milk2.jpg/revision/latest?cb=20170124115645");
