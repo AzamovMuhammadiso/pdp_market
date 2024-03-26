@@ -46,14 +46,14 @@ public class StartCommandHandler implements CommandHandler {
 
         KeyboardRow row2 = new KeyboardRow();
 
-        KeyboardButton btn3 = new KeyboardButton("button 3");
+        KeyboardButton btn3 = new KeyboardButton("\uD83D\uDCB0 Payment");
 
-        KeyboardButton btn4 = new KeyboardButton("button 4");
+        KeyboardButton btn4 = new KeyboardButton("\uD83D\uDCCB About Us");
         row2.add(btn3);
         row2.add(btn4);
 
         KeyboardRow row3 = new KeyboardRow();
-        KeyboardButton btn5 = new KeyboardButton("⚙\uFE0F Sozlamalar");
+        KeyboardButton btn5 = new KeyboardButton("\uD83D\uDC51 Admin");
 
         row3.add(btn5);
 

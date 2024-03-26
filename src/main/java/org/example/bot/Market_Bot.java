@@ -31,9 +31,15 @@ public class Market_Bot extends TelegramLongPollingBot {
 
             System.out.println("Received message: " + text);
 
-            if (text.equals("/start") ||text.contains("Menu")) {
+            if (text.equals("/start") || text.contains("Menu")) {
                 CommandHandler handler = new StartCommandHandler();
                 handler.handleCommand(message);
+            } else if (text.contains("/admin") || text.contains("Admin")) {
+                if (isAdmin(message.getFrom().getId())) {
+                    handleAdminActions(chatId);
+                } else {
+                    sendNonAdminMessage(chatId);
+                }
             } else if (text.equals("/help")) {
                 CommandHandler handler = new HelpCommandHandler();
                 handler.handleCommand(message);
@@ -61,7 +67,87 @@ public class Market_Bot extends TelegramLongPollingBot {
                 sendKefir(chatId);
             } else if (text.contains("Cream")) {
                 sendCream(chatId);
+            } else if (text.contains("About Us")) {
+                handleAboutUs(chatId);
+            } else if (text.contains("Support")) {
+                handleSupport(chatId);
             }
+        }
+    }
+
+    private void handleSupport(Long chatId) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+        String response = """
+                🤖 Need assistance? We're here to help! 🤖
+                    
+                If you have any questions, concerns, or feedback, feel free to reach out to our support team. 🔍📞
+                    
+                You can also contact us directly via email at azamovmuhammadiso@gmail.com or by phone at <a href='tel:+998938220038'>+938220038</a>. 📧📞
+                    
+                Our dedicated team is available 24/7 to ensure your queries are addressed promptly. 💬✨
+                    
+                If you wish to make a payment or need assistance with transactions, you can use our support card:
+                💳 <code>5614 6819 1845 9268</code>
+                    
+                Rest assured that your transactions are secure and handled with care by our team. 💰🔒
+                """;
+        sendMessage.setText(response);
+        sendMessage.setParseMode(ParseMode.HTML);
+        try {
+            execute(sendMessage);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    private void handleAboutUs(Long chatId) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+
+        String response = """
+                🌟 Welcome to our Bot! 🌟
+                        
+                We're here to make your shopping experience delightful and hassle-free. 💼🛍️
+                        
+                Our goal is to provide you with the best products and services, ensuring your satisfaction every step of the way. 🤝
+                        
+                Feel free to explore our categories and discover amazing deals. Happy shopping! 🎉🛒
+                """;
+
+        sendMessage.setText(response);
+
+        try {
+            execute(sendMessage);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private boolean isAdmin(Long userId) {
+        return userId.equals(1921970232L);
+    }
+
+    private void handleAdminActions(Long chatId) {
+        SendMessage message = new SendMessage();
+        message.setChatId(chatId);
+        message.setText("Admin actions:\n1. Action 1\n2. Action 2\n3. Action 3");
+        try {
+            execute(message);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void sendNonAdminMessage(Long chatId) {
+        SendMessage message = new SendMessage();
+        message.setChatId(chatId);
+        message.setText("You are not an admin.");
+        try {
+            execute(message);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
         }
     }
 
