@@ -36,19 +36,15 @@ public class StartCommandHandler implements CommandHandler {
 
     private static ReplyKeyboardMarkup getReplyKeyboardMarkup() {
         KeyboardRow row1 = new KeyboardRow();
-
-        KeyboardButton categories = new KeyboardButton("\uD83D\uDDC2\uFE0F Categories");
-
+        KeyboardButton btn1 = new KeyboardButton("\uD83D\uDDC2\uFE0F Categories");
         KeyboardButton btn2 = new KeyboardButton("\uD83E\uDD1D Support");
 
-        row1.add(categories);
-        row1.add(btn2);
-
         KeyboardRow row2 = new KeyboardRow();
-
         KeyboardButton btn3 = new KeyboardButton("\uD83D\uDCB0 Payment");
-
         KeyboardButton btn4 = new KeyboardButton("\uD83D\uDCCB About Us");
+
+        row1.add(btn1);
+        row1.add(btn2);
         row2.add(btn3);
         row2.add(btn4);
 
