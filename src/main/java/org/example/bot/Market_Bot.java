@@ -31,7 +31,7 @@ public class Market_Bot extends TelegramLongPollingBot {
 
             System.out.println("Received message: " + text);
 
-            if (text.equals("/start")) {
+            if (text.equals("/start") ||text.contains("Menu")) {
                 CommandHandler handler = new StartCommandHandler();
                 handler.handleCommand(message);
             } else if (text.equals("/help")) {
@@ -45,7 +45,7 @@ public class Market_Bot extends TelegramLongPollingBot {
                 sendFood(chatId);
             } else if (text.contains("Dairy")) {
                 sendDairy(chatId);
-            }  else if (text.contains("Coffee")) {
+            } else if (text.contains("Coffee")) {
                 sendCoffee(chatId);
             } else if (text.contains("Ice Cream")) {
                 sendIceCream(chatId);
@@ -59,7 +59,7 @@ public class Market_Bot extends TelegramLongPollingBot {
                 sendYogurt(chatId);
             } else if (text.contains("Kefir")) {
                 sendKefir(chatId);
-            }else if (text.contains("Cream")) {
+            } else if (text.contains("Cream")) {
                 sendCream(chatId);
             }
         }
@@ -70,7 +70,7 @@ public class Market_Bot extends TelegramLongPollingBot {
             ProductService productService = new ProductService();
             List<Product> clothingProducts = productService.getProductsForCategory("Kefir");
 
-            for (Product product : clothingProducts){
+            for (Product product : clothingProducts) {
                 SendPhoto sendPhoto = new SendPhoto();
                 sendPhoto.setChatId(chatId);
                 sendPhoto.setPhoto(new InputFile(product.getImageUrl()));
@@ -296,8 +296,12 @@ public class Market_Bot extends TelegramLongPollingBot {
         row4.add(new KeyboardButton("\uD83E\uDD63 Yogurt"));
         row4.add(new KeyboardButton("\uD83C\uDF76 Kefir"));
 
+        KeyboardRow row5 = new KeyboardRow();
+        row5.add(new KeyboardButton("\uD83D\uDD19 Back Food"));
+
 
         List<KeyboardRow> keyboard = new ArrayList<>();
+        keyboard.add(row5);
         keyboard.add(row1);
         keyboard.add(row2);
         keyboard.add(row3);
@@ -323,6 +327,7 @@ public class Market_Bot extends TelegramLongPollingBot {
         String response = "Please select food types:";
         sendMessage.setText(response);
 
+
         KeyboardRow row1 = new KeyboardRow();
         row1.add(new KeyboardButton("\uD83E\uDD5B Dairy"));
         row1.add(new KeyboardButton("\uD83E\uDD66 Vegetables"));
@@ -334,8 +339,12 @@ public class Market_Bot extends TelegramLongPollingBot {
         KeyboardRow row3 = new KeyboardRow();
         row3.add(new KeyboardButton("\uD83C\uDF57 Protein"));
 
+        KeyboardRow row4 = new KeyboardRow();
+        row4.add(new KeyboardButton("\uD83D\uDD19 Back Categories"));
+
 
         List<KeyboardRow> keyboard = new ArrayList<>();
+        keyboard.add(row4);
         keyboard.add(row1);
         keyboard.add(row2);
         keyboard.add(row3);
@@ -403,7 +412,11 @@ public class Market_Bot extends TelegramLongPollingBot {
         row4.add(new KeyboardButton("⚽ Sports & Recreation"));
         row4.add(new KeyboardButton("\uD83D\uDCDA Books"));
 
+        KeyboardRow row5 = new KeyboardRow();
+        row5.add(new KeyboardButton("\uD83D\uDD19 Back Menu"));
+
         List<KeyboardRow> keyboard = new ArrayList<>();
+        keyboard.add(row5);
         keyboard.add(row1);
         keyboard.add(row2);
         keyboard.add(row3);

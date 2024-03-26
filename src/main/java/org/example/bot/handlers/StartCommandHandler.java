@@ -16,12 +16,7 @@ public class StartCommandHandler implements CommandHandler {
         Long chatId = message.getChatId();
 
         String response = """
-                Bizning telegram do'konimizga xush kelibsiz! 🎉
-                Mijozimiz ekanligingizdan xursandmiz 😊 
-                Xarid qilmoqchi bo`lgan mahsulotingizni topishda yozdam beramiz 🛒🛒🛒 
-                Ishonchli va qulay xaridlar! 💳
-                
-                """;
+                Choose menu: """;
 
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
@@ -44,7 +39,7 @@ public class StartCommandHandler implements CommandHandler {
 
         KeyboardButton categories = new KeyboardButton("\uD83D\uDDC2\uFE0F Categories");
 
-        KeyboardButton btn2 = new KeyboardButton("button 2");
+        KeyboardButton btn2 = new KeyboardButton("\uD83E\uDD1D Support");
 
         row1.add(categories);
         row1.add(btn2);
@@ -58,7 +53,7 @@ public class StartCommandHandler implements CommandHandler {
         row2.add(btn4);
 
         KeyboardRow row3 = new KeyboardRow();
-        KeyboardButton btn5 = new KeyboardButton("button 5");
+        KeyboardButton btn5 = new KeyboardButton("⚙\uFE0F Sozlamalar");
 
         row3.add(btn5);
 
