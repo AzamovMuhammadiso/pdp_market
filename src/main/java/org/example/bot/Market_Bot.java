@@ -1,14 +1,17 @@
 package org.example.bot;
 
+import org.example.bot.db.DbProps;
 import org.example.bot.handlers.CommandHandler;
 import org.example.bot.handlers.HelpCommandHandler;
 import org.example.bot.handlers.StartCommandHandler;
 import org.example.bot.model.Product;
+import org.example.bot.model.User;
 import org.example.bot.services.ProductService;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.objects.Contact;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -17,6 +20,10 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,10 +33,12 @@ public class Market_Bot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
             Message message = update.getMessage();
-            String text = message.getText();
+            Contact contact = message.getContact();
             Long chatId = message.getChatId();
+            String text = message.getText();
 
             System.out.println("Received message: " + text);
+
 
             if (text.equals("/start") || text.contains("Menu")) {
                 CommandHandler handler = new StartCommandHandler();
@@ -71,7 +80,69 @@ public class Market_Bot extends TelegramLongPollingBot {
                 handleAboutUs(chatId);
             } else if (text.contains("Support")) {
                 handleSupport(chatId);
+            } else if (message.hasContact()) {
+                System.out.println("asdasd");
+                handleContact(message, chatId);
             }
+        }
+    }
+
+    private void handleContact(Message message, Long chatId) {
+        Contact contact = message.getContact();
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+
+        if (contact != null) {
+            System.out.println("Contact shared:\nName: " + contact.getFirstName() + " " + contact.getLastName() + "\nPhone number: " + contact.getPhoneNumber());
+            org.telegram.telegrambots.meta.api.objects.User telegramUser = message.getFrom();
+            if (telegramUser != null) {
+                User user = new User();
+                user.setId(telegramUser.getId());
+                user.setUsername(telegramUser.getUserName());
+                user.setFirstName(contact.getFirstName());
+                user.setLastName(contact.getLastName());
+
+                insertUserIntoDatabase(user, contact.getPhoneNumber());
+
+                sendMessage.setText("Contact shared:\nName: " + contact.getFirstName() + " " + contact.getLastName() + "\nPhone number: " + contact.getPhoneNumber());
+            } else {
+                System.out.println("No user information found in the message.");
+                sendMessage.setText("No user information found in the message.");
+            }
+        } else {
+            System.out.println("No contact shared in the message.");
+            sendMessage.setText("No contact shared in the message.");
+        }
+
+        try {
+            execute(sendMessage);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+            System.out.println("Failed to send contact message.");
+        }
+    }
+
+    private void insertUserIntoDatabase(User user, String phoneNumber) {
+        String urlSQL = DbProps.get("db.url");
+        String usernameSQL = DbProps.get("db.username");
+        String passwordSQL = DbProps.get("db.password");
+        try {
+            Connection connection = DriverManager.getConnection(urlSQL, usernameSQL, passwordSQL);
+            Statement statement = connection.createStatement();
+
+            String query = "INSERT INTO users (userId, username, firstname, lastname, phonenumber) " +
+                    "VALUES ('" + user.getId() + "', '" + user.getUsername() + "', '" + user.getFirstName() + "','" + user.getLastName() + "','" + phoneNumber + "')";
+
+//            String query = "INSERT INTO users (id, username, firstname, lastname, phonenumber) " +
+//                    "VALUES ('" + "123124124"+ "', '" + "azamov_23"+ "', '" + "Muhammadiso" + "','" + "Azamov" + "','" + "+998938220038" + "')";
+
+            statement.executeUpdate(query);
+
+            statement.close();
+            connection.close();
+        } catch (SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -163,9 +234,7 @@ public class Market_Bot extends TelegramLongPollingBot {
 
                 // Construct the caption with product details
                 StringBuilder caption = new StringBuilder();
-                caption.append("<b>Name:</b> ").append(product.getName()).append("\n")
-                        .append("<b>Description:</b> ").append(product.getDescription()).append("\n")
-                        .append("<b>Price:</b> $").append(product.getPrice());
+                caption.append("<b>Name:</b> ").append(product.getName()).append("\n").append("<b>Description:</b> ").append(product.getDescription()).append("\n").append("<b>Price:</b> $").append(product.getPrice());
 
                 sendPhoto.setCaption(caption.toString());
                 sendPhoto.setParseMode(ParseMode.HTML);
@@ -189,9 +258,7 @@ public class Market_Bot extends TelegramLongPollingBot {
 
                 // Construct the caption with product details
                 StringBuilder caption = new StringBuilder();
-                caption.append("<b>Name:</b> ").append(product.getName()).append("\n")
-                        .append("<b>Description:</b> ").append(product.getDescription()).append("\n")
-                        .append("<b>Price:</b> $").append(product.getPrice());
+                caption.append("<b>Name:</b> ").append(product.getName()).append("\n").append("<b>Description:</b> ").append(product.getDescription()).append("\n").append("<b>Price:</b> $").append(product.getPrice());
 
                 sendPhoto.setCaption(caption.toString());
                 sendPhoto.setParseMode(ParseMode.HTML);
@@ -215,9 +282,7 @@ public class Market_Bot extends TelegramLongPollingBot {
 
                 // Construct the caption with product details
                 StringBuilder caption = new StringBuilder();
-                caption.append("<b>Name:</b> ").append(product.getName()).append("\n")
-                        .append("<b>Description:</b> ").append(product.getDescription()).append("\n")
-                        .append("<b>Price:</b> $").append(product.getPrice());
+                caption.append("<b>Name:</b> ").append(product.getName()).append("\n").append("<b>Description:</b> ").append(product.getDescription()).append("\n").append("<b>Price:</b> $").append(product.getPrice());
 
                 sendPhoto.setCaption(caption.toString());
                 sendPhoto.setParseMode(ParseMode.HTML);
@@ -241,9 +306,7 @@ public class Market_Bot extends TelegramLongPollingBot {
 
                 // Construct the caption with product details
                 StringBuilder caption = new StringBuilder();
-                caption.append("<b>Name:</b> ").append(product.getName()).append("\n")
-                        .append("<b>Description:</b> ").append(product.getDescription()).append("\n")
-                        .append("<b>Price:</b> $").append(product.getPrice());
+                caption.append("<b>Name:</b> ").append(product.getName()).append("\n").append("<b>Description:</b> ").append(product.getDescription()).append("\n").append("<b>Price:</b> $").append(product.getPrice());
 
                 sendPhoto.setCaption(caption.toString());
                 sendPhoto.setParseMode(ParseMode.HTML);
@@ -267,9 +330,7 @@ public class Market_Bot extends TelegramLongPollingBot {
 
                 // Construct the caption with product details
                 StringBuilder caption = new StringBuilder();
-                caption.append("<b>Name:</b> ").append(product.getName()).append("\n")
-                        .append("<b>Description:</b> ").append(product.getDescription()).append("\n")
-                        .append("<b>Price:</b> $").append(product.getPrice());
+                caption.append("<b>Name:</b> ").append(product.getName()).append("\n").append("<b>Description:</b> ").append(product.getDescription()).append("\n").append("<b>Price:</b> $").append(product.getPrice());
 
                 sendPhoto.setCaption(caption.toString());
                 sendPhoto.setParseMode(ParseMode.HTML);
@@ -293,9 +354,7 @@ public class Market_Bot extends TelegramLongPollingBot {
 
                 // Construct the caption with product details
                 StringBuilder caption = new StringBuilder();
-                caption.append("<b>Name:</b> ").append(product.getName()).append("\n")
-                        .append("<b>Description:</b> ").append(product.getDescription()).append("\n")
-                        .append("<b>Price:</b> $").append(product.getPrice());
+                caption.append("<b>Name:</b> ").append(product.getName()).append("\n").append("<b>Description:</b> ").append(product.getDescription()).append("\n").append("<b>Price:</b> $").append(product.getPrice());
 
                 sendPhoto.setCaption(caption.toString());
                 sendPhoto.setParseMode(ParseMode.HTML);
@@ -319,9 +378,7 @@ public class Market_Bot extends TelegramLongPollingBot {
 
                 // Construct the caption with product details
                 StringBuilder caption = new StringBuilder();
-                caption.append("<b>Name:</b> ").append(product.getName()).append("\n")
-                        .append("<b>Description:</b> ").append(product.getDescription()).append("\n")
-                        .append("<b>Price:</b> $").append(product.getPrice());
+                caption.append("<b>Name:</b> ").append(product.getName()).append("\n").append("<b>Description:</b> ").append(product.getDescription()).append("\n").append("<b>Price:</b> $").append(product.getPrice());
 
                 sendPhoto.setCaption(caption.toString());
                 sendPhoto.setParseMode(ParseMode.HTML);
@@ -345,9 +402,7 @@ public class Market_Bot extends TelegramLongPollingBot {
 
                 // Construct the caption with product details
                 StringBuilder caption = new StringBuilder();
-                caption.append("<b>Name:</b> ").append(product.getName()).append("\n")
-                        .append("<b>Description:</b> ").append(product.getDescription()).append("\n")
-                        .append("<b>Price:</b> $").append(product.getPrice());
+                caption.append("<b>Name:</b> ").append(product.getName()).append("\n").append("<b>Description:</b> ").append(product.getDescription()).append("\n").append("<b>Price:</b> $").append(product.getPrice());
 
                 sendPhoto.setCaption(caption.toString());
                 sendPhoto.setParseMode(ParseMode.HTML);
@@ -460,9 +515,7 @@ public class Market_Bot extends TelegramLongPollingBot {
 
                 // Construct the caption with product details
                 StringBuilder caption = new StringBuilder();
-                caption.append("<b>Name:</b> ").append(product.getName()).append("\n")
-                        .append("<b>Description:</b> ").append(product.getDescription()).append("\n")
-                        .append("<b>Price:</b> $").append(product.getPrice());
+                caption.append("<b>Name:</b> ").append(product.getName()).append("\n").append("<b>Description:</b> ").append(product.getDescription()).append("\n").append("<b>Price:</b> $").append(product.getPrice());
 
                 sendPhoto.setCaption(caption.toString());
                 sendPhoto.setParseMode(ParseMode.HTML);
