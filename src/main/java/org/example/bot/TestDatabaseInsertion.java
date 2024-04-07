@@ -7,8 +7,9 @@ import java.sql.*;
 public class TestDatabaseInsertion {
 
     public static void main(String[] args) throws Exception {
-        select();
-
+//        select();
+//        insert();
+        delete();
     }
 
     private static void insert() {
@@ -17,7 +18,7 @@ public class TestDatabaseInsertion {
         String password = DbProps.get("db.password");
 
         String query = "INSERT INTO users (id, username, firstname, lastname, phonenumber) " +
-                "VALUES ('123124124', 'azamov_23', 'Muhammadiso', 'Azamov', '+998938220038')";
+                "VALUES ('123124127', 'newUser', 'Ali', 'Valiyev', '+998900050505')";
 
 
         try {
@@ -64,5 +65,30 @@ public class TestDatabaseInsertion {
             System.out.println("Error executing select query: " + e.getMessage());
         }
     }
+
+    private static void delete() {
+        String url = DbProps.get("db.url");
+        String username = DbProps.get("db.username");
+        String password = DbProps.get("db.password");
+
+        String query = "DELETE FROM users WHERE id = '123124127'";
+
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             Statement statement = connection.createStatement()) {
+
+            int rowsDeleted = statement.executeUpdate(query);
+
+            if (rowsDeleted > 0) {
+                System.out.println("User deleted successfully.");
+            } else {
+                System.out.println("No user found with the specified ID.");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
 
 }

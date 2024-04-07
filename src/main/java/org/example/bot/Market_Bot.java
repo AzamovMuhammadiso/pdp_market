@@ -1,5 +1,6 @@
 package org.example.bot;
 
+import org.example.bot.categoryhandlers.Categoryhandler;
 import org.example.bot.db.DbProps;
 import org.example.bot.handlers.CommandHandler;
 import org.example.bot.handlers.HelpCommandHandler;
@@ -31,16 +32,16 @@ public class Market_Bot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        if (update.hasMessage() && update.getMessage().hasText()) {
+        if (update.hasMessage()) {
             Message message = update.getMessage();
-            Contact contact = message.getContact();
             Long chatId = message.getChatId();
             String text = message.getText();
 
             System.out.println("Received message: " + text);
-
-
-            if (text.equals("/start") || text.contains("Menu")) {
+            if (message.hasContact()) {
+                System.out.println("contact received");
+                handleContact(message, chatId);
+            } else if (text.equals("/start") || text.contains("Menu")) {
                 CommandHandler handler = new StartCommandHandler();
                 handler.handleCommand(message);
             } else if (text.contains("/admin") || text.contains("Admin")) {
@@ -53,36 +54,33 @@ public class Market_Bot extends TelegramLongPollingBot {
                 CommandHandler handler = new HelpCommandHandler();
                 handler.handleCommand(message);
             } else if (text.contains("Categories")) {
-                sendProductButtons(chatId);
+                Categoryhandler.sendProductButtons(this, chatId);
             } else if (text.contains("Clothes")) {
-                sendClothing(chatId);
+                Categoryhandler.sendClothing(this, chatId);
             } else if (text.contains("Food")) {
-                sendFood(chatId);
+                Categoryhandler.sendFood(this, chatId);
             } else if (text.contains("Dairy")) {
-                sendDairy(chatId);
+                Categoryhandler.sendDairy(this, chatId);
             } else if (text.contains("Coffee")) {
-                sendCoffee(chatId);
+                Categoryhandler.sendCoffee(this, chatId);
             } else if (text.contains("Ice Cream")) {
-                sendIceCream(chatId);
+                Categoryhandler.sendIceCream(this, chatId);
             } else if (text.contains("Milk")) {
-                sendMilk(chatId);
+                Categoryhandler.sendMilk(this, chatId);
             } else if (text.contains("Cheeses")) {
-                sendCheeses(chatId);
+                Categoryhandler.sendCheeses(this, chatId);
             } else if (text.contains("Butter")) {
-                sendButter(chatId);
+                Categoryhandler.sendButter(this, chatId);
             } else if (text.contains("Yogurt")) {
-                sendYogurt(chatId);
+                Categoryhandler.sendYogurt(this, chatId);
             } else if (text.contains("Kefir")) {
-                sendKefir(chatId);
+                Categoryhandler.sendKefir(this, chatId);
             } else if (text.contains("Cream")) {
-                sendCream(chatId);
+                Categoryhandler.sendCream(this, chatId);
             } else if (text.contains("About Us")) {
                 handleAboutUs(chatId);
             } else if (text.contains("Support")) {
                 handleSupport(chatId);
-            } else if (message.hasContact()) {
-                System.out.println("asdasd");
-                handleContact(message, chatId);
             }
         }
     }
@@ -91,12 +89,12 @@ public class Market_Bot extends TelegramLongPollingBot {
         Contact contact = message.getContact();
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
+        org.telegram.telegrambots.meta.api.objects.User telegramUser = message.getFrom();
 
         if (contact != null) {
-            System.out.println("Contact shared:\nName: " + contact.getFirstName() + " " + contact.getLastName() + "\nPhone number: " + contact.getPhoneNumber());
-            org.telegram.telegrambots.meta.api.objects.User telegramUser = message.getFrom();
-            if (telegramUser != null) {
-                User user = new User();
+            User user = new User();
+            if (telegramUser.getId().equals(user.getId())) {
+                System.out.println("Contact shared:" + "userID: " + contact.getUserId() + ", Username: " + telegramUser.getUserName() + "\nName: " + contact.getFirstName() + " " + contact.getLastName() + "\nPhone number: " + contact.getPhoneNumber());
                 user.setId(telegramUser.getId());
                 user.setUsername(telegramUser.getUserName());
                 user.setFirstName(contact.getFirstName());
@@ -104,14 +102,15 @@ public class Market_Bot extends TelegramLongPollingBot {
 
                 insertUserIntoDatabase(user, contact.getPhoneNumber());
 
-                sendMessage.setText("Contact shared:\nName: " + contact.getFirstName() + " " + contact.getLastName() + "\nPhone number: " + contact.getPhoneNumber());
+                sendMessage.setText("Contact shared:\n" + "userID: " + contact.getUserId() + "\n" + "Username: " + telegramUser.getUserName() + "\nFirstname: " + contact.getFirstName() + "\nLastname: " + contact.getLastName() + "\nPhone number: " + contact.getPhoneNumber());
             } else {
-                System.out.println("No user information found in the message.");
-                sendMessage.setText("No user information found in the message.");
+                System.out.println("User already exist.");
+                sendMessage.setText("You have already shared a contact.");
+
             }
         } else {
             System.out.println("No contact shared in the message.");
-            sendMessage.setText("No contact shared in the message.");
+            sendMessage.setText("Please share contact for delivery.");
         }
 
         try {
@@ -122,6 +121,7 @@ public class Market_Bot extends TelegramLongPollingBot {
         }
     }
 
+
     private void insertUserIntoDatabase(User user, String phoneNumber) {
         String urlSQL = DbProps.get("db.url");
         String usernameSQL = DbProps.get("db.username");
@@ -130,11 +130,8 @@ public class Market_Bot extends TelegramLongPollingBot {
             Connection connection = DriverManager.getConnection(urlSQL, usernameSQL, passwordSQL);
             Statement statement = connection.createStatement();
 
-            String query = "INSERT INTO users (userId, username, firstname, lastname, phonenumber) " +
+            String query = "INSERT INTO users (id, username, firstname, lastname, phonenumber) " +
                     "VALUES ('" + user.getId() + "', '" + user.getUsername() + "', '" + user.getFirstName() + "','" + user.getLastName() + "','" + phoneNumber + "')";
-
-//            String query = "INSERT INTO users (id, username, firstname, lastname, phonenumber) " +
-//                    "VALUES ('" + "123124124"+ "', '" + "azamov_23"+ "', '" + "Muhammadiso" + "','" + "Azamov" + "','" + "+998938220038" + "')";
 
             statement.executeUpdate(query);
 
@@ -217,358 +214,6 @@ public class Market_Bot extends TelegramLongPollingBot {
         message.setText("You are not an admin.");
         try {
             execute(message);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void sendKefir(Long chatId) {
-        try {
-            ProductService productService = new ProductService();
-            List<Product> clothingProducts = productService.getProductsForCategory("Kefir");
-
-            for (Product product : clothingProducts) {
-                SendPhoto sendPhoto = new SendPhoto();
-                sendPhoto.setChatId(chatId);
-                sendPhoto.setPhoto(new InputFile(product.getImageUrl()));
-
-                // Construct the caption with product details
-                StringBuilder caption = new StringBuilder();
-                caption.append("<b>Name:</b> ").append(product.getName()).append("\n").append("<b>Description:</b> ").append(product.getDescription()).append("\n").append("<b>Price:</b> $").append(product.getPrice());
-
-                sendPhoto.setCaption(caption.toString());
-                sendPhoto.setParseMode(ParseMode.HTML);
-
-                execute(sendPhoto);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void sendYogurt(Long chatId) {
-        try {
-            ProductService productService = new ProductService();
-            List<Product> clothingProducts = productService.getProductsForCategory("Yogurt");
-
-            for (Product product : clothingProducts) {
-                SendPhoto sendPhoto = new SendPhoto();
-                sendPhoto.setChatId(chatId);
-                sendPhoto.setPhoto(new InputFile(product.getImageUrl()));
-
-                // Construct the caption with product details
-                StringBuilder caption = new StringBuilder();
-                caption.append("<b>Name:</b> ").append(product.getName()).append("\n").append("<b>Description:</b> ").append(product.getDescription()).append("\n").append("<b>Price:</b> $").append(product.getPrice());
-
-                sendPhoto.setCaption(caption.toString());
-                sendPhoto.setParseMode(ParseMode.HTML);
-
-                execute(sendPhoto);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void sendButter(Long chatId) {
-        try {
-            ProductService productService = new ProductService();
-            List<Product> clothingProducts = productService.getProductsForCategory("Butter");
-
-            for (Product product : clothingProducts) {
-                SendPhoto sendPhoto = new SendPhoto();
-                sendPhoto.setChatId(chatId);
-                sendPhoto.setPhoto(new InputFile(product.getImageUrl()));
-
-                // Construct the caption with product details
-                StringBuilder caption = new StringBuilder();
-                caption.append("<b>Name:</b> ").append(product.getName()).append("\n").append("<b>Description:</b> ").append(product.getDescription()).append("\n").append("<b>Price:</b> $").append(product.getPrice());
-
-                sendPhoto.setCaption(caption.toString());
-                sendPhoto.setParseMode(ParseMode.HTML);
-
-                execute(sendPhoto);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void sendCheeses(Long chatId) {
-        try {
-            ProductService productService = new ProductService();
-            List<Product> clothingProducts = productService.getProductsForCategory("Cheeses");
-
-            for (Product product : clothingProducts) {
-                SendPhoto sendPhoto = new SendPhoto();
-                sendPhoto.setChatId(chatId);
-                sendPhoto.setPhoto(new InputFile(product.getImageUrl()));
-
-                // Construct the caption with product details
-                StringBuilder caption = new StringBuilder();
-                caption.append("<b>Name:</b> ").append(product.getName()).append("\n").append("<b>Description:</b> ").append(product.getDescription()).append("\n").append("<b>Price:</b> $").append(product.getPrice());
-
-                sendPhoto.setCaption(caption.toString());
-                sendPhoto.setParseMode(ParseMode.HTML);
-
-                execute(sendPhoto);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void sendMilk(Long chatId) {
-        try {
-            ProductService productService = new ProductService();
-            List<Product> clothingProducts = productService.getProductsForCategory("Milk");
-
-            for (Product product : clothingProducts) {
-                SendPhoto sendPhoto = new SendPhoto();
-                sendPhoto.setChatId(chatId);
-                sendPhoto.setPhoto(new InputFile(product.getImageUrl()));
-
-                // Construct the caption with product details
-                StringBuilder caption = new StringBuilder();
-                caption.append("<b>Name:</b> ").append(product.getName()).append("\n").append("<b>Description:</b> ").append(product.getDescription()).append("\n").append("<b>Price:</b> $").append(product.getPrice());
-
-                sendPhoto.setCaption(caption.toString());
-                sendPhoto.setParseMode(ParseMode.HTML);
-
-                execute(sendPhoto);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void sendIceCream(Long chatId) {
-        try {
-            ProductService productService = new ProductService();
-            List<Product> clothingProducts = productService.getProductsForCategory("Ice Cream");
-
-            for (Product product : clothingProducts) {
-                SendPhoto sendPhoto = new SendPhoto();
-                sendPhoto.setChatId(chatId);
-                sendPhoto.setPhoto(new InputFile(product.getImageUrl()));
-
-                // Construct the caption with product details
-                StringBuilder caption = new StringBuilder();
-                caption.append("<b>Name:</b> ").append(product.getName()).append("\n").append("<b>Description:</b> ").append(product.getDescription()).append("\n").append("<b>Price:</b> $").append(product.getPrice());
-
-                sendPhoto.setCaption(caption.toString());
-                sendPhoto.setParseMode(ParseMode.HTML);
-
-                execute(sendPhoto);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void sendCoffee(Long chatId) {
-        try {
-            ProductService productService = new ProductService();
-            List<Product> clothingProducts = productService.getProductsForCategory("Coffee");
-
-            for (Product product : clothingProducts) {
-                SendPhoto sendPhoto = new SendPhoto();
-                sendPhoto.setChatId(chatId);
-                sendPhoto.setPhoto(new InputFile(product.getImageUrl()));
-
-                // Construct the caption with product details
-                StringBuilder caption = new StringBuilder();
-                caption.append("<b>Name:</b> ").append(product.getName()).append("\n").append("<b>Description:</b> ").append(product.getDescription()).append("\n").append("<b>Price:</b> $").append(product.getPrice());
-
-                sendPhoto.setCaption(caption.toString());
-                sendPhoto.setParseMode(ParseMode.HTML);
-
-                execute(sendPhoto);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void sendCream(Long chatId) {
-        try {
-            ProductService productService = new ProductService();
-            List<Product> clothingProducts = productService.getProductsForCategory("Cream");
-
-            for (Product product : clothingProducts) {
-                SendPhoto sendPhoto = new SendPhoto();
-                sendPhoto.setChatId(chatId);
-                sendPhoto.setPhoto(new InputFile(product.getImageUrl()));
-
-                // Construct the caption with product details
-                StringBuilder caption = new StringBuilder();
-                caption.append("<b>Name:</b> ").append(product.getName()).append("\n").append("<b>Description:</b> ").append(product.getDescription()).append("\n").append("<b>Price:</b> $").append(product.getPrice());
-
-                sendPhoto.setCaption(caption.toString());
-                sendPhoto.setParseMode(ParseMode.HTML);
-
-                execute(sendPhoto);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void sendDairy(Long chatId) {
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(chatId);
-
-        String response = "Please select Dairy types:";
-        sendMessage.setText(response);
-
-        KeyboardRow row1 = new KeyboardRow();
-        row1.add(new KeyboardButton("\uD83E\uDD5B Cream"));
-        row1.add(new KeyboardButton("☕\uFE0F Coffee"));
-
-        KeyboardRow row2 = new KeyboardRow();
-        row2.add(new KeyboardButton("\uD83C\uDF68 Ice Cream"));
-        row2.add(new KeyboardButton("\uD83E\uDD5B Milk"));
-
-        KeyboardRow row3 = new KeyboardRow();
-        row3.add(new KeyboardButton("\uD83E\uDDC0 Cheeses"));
-        row3.add(new KeyboardButton("\uD83E\uDDC8 Butter"));
-
-        KeyboardRow row4 = new KeyboardRow();
-        row4.add(new KeyboardButton("\uD83E\uDD63 Yogurt"));
-        row4.add(new KeyboardButton("\uD83C\uDF76 Kefir"));
-
-        KeyboardRow row5 = new KeyboardRow();
-        row5.add(new KeyboardButton("\uD83D\uDD19 Back Food"));
-
-
-        List<KeyboardRow> keyboard = new ArrayList<>();
-        keyboard.add(row5);
-        keyboard.add(row1);
-        keyboard.add(row2);
-        keyboard.add(row3);
-        keyboard.add(row4);
-
-        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
-        keyboardMarkup.setKeyboard(keyboard);
-        keyboardMarkup.setResizeKeyboard(true);
-
-        sendMessage.setReplyMarkup(keyboardMarkup);
-
-        try {
-            execute(sendMessage);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void sendFood(Long chatId) {
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(chatId);
-
-        String response = "Please select food types:";
-        sendMessage.setText(response);
-
-
-        KeyboardRow row1 = new KeyboardRow();
-        row1.add(new KeyboardButton("\uD83E\uDD5B Dairy"));
-        row1.add(new KeyboardButton("\uD83E\uDD66 Vegetables"));
-
-        KeyboardRow row2 = new KeyboardRow();
-        row2.add(new KeyboardButton("\uD83C\uDF47 Fruits"));
-        row2.add(new KeyboardButton("\uD83C\uDF3E  Grains"));
-
-        KeyboardRow row3 = new KeyboardRow();
-        row3.add(new KeyboardButton("\uD83C\uDF57 Protein"));
-
-        KeyboardRow row4 = new KeyboardRow();
-        row4.add(new KeyboardButton("\uD83D\uDD19 Back Categories"));
-
-
-        List<KeyboardRow> keyboard = new ArrayList<>();
-        keyboard.add(row4);
-        keyboard.add(row1);
-        keyboard.add(row2);
-        keyboard.add(row3);
-
-        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
-        keyboardMarkup.setKeyboard(keyboard);
-        keyboardMarkup.setResizeKeyboard(true);
-
-        sendMessage.setReplyMarkup(keyboardMarkup);
-
-        try {
-            execute(sendMessage);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void sendClothing(Long chatId) {
-        try {
-            ProductService productService = new ProductService();
-            List<Product> clothingProducts = productService.getProductsForCategory("Clothing");
-
-            for (Product product : clothingProducts) {
-                SendPhoto sendPhoto = new SendPhoto();
-                sendPhoto.setChatId(chatId);
-                sendPhoto.setPhoto(new InputFile(product.getImageUrl()));
-
-                // Construct the caption with product details
-                StringBuilder caption = new StringBuilder();
-                caption.append("<b>Name:</b> ").append(product.getName()).append("\n").append("<b>Description:</b> ").append(product.getDescription()).append("\n").append("<b>Price:</b> $").append(product.getPrice());
-
-                sendPhoto.setCaption(caption.toString());
-                sendPhoto.setParseMode(ParseMode.HTML);
-
-                execute(sendPhoto);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    private void sendProductButtons(Long chatId) {
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(chatId);
-
-        String response = "Please select a category:";
-        sendMessage.setText(response);
-
-        KeyboardRow row1 = new KeyboardRow();
-        row1.add(new KeyboardButton("\uD83D\uDC55 Clothes"));
-        row1.add(new KeyboardButton("\uD83C\uDF54 Food"));
-
-        KeyboardRow row2 = new KeyboardRow();
-        row2.add(new KeyboardButton("\uD83D\uDC5F Shoes"));
-        row2.add(new KeyboardButton("\uD83D\uDEE0\uFE0F  Electronics"));
-
-        KeyboardRow row3 = new KeyboardRow();
-        row3.add(new KeyboardButton("\uD83E\uDDF8 Children's Products"));
-        row3.add(new KeyboardButton("\uD83C\uDFE0 Household Goods"));
-
-        KeyboardRow row4 = new KeyboardRow();
-        row4.add(new KeyboardButton("⚽ Sports & Recreation"));
-        row4.add(new KeyboardButton("\uD83D\uDCDA Books"));
-
-        KeyboardRow row5 = new KeyboardRow();
-        row5.add(new KeyboardButton("\uD83D\uDD19 Back Menu"));
-
-        List<KeyboardRow> keyboard = new ArrayList<>();
-        keyboard.add(row5);
-        keyboard.add(row1);
-        keyboard.add(row2);
-        keyboard.add(row3);
-        keyboard.add(row4);
-
-        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
-        keyboardMarkup.setKeyboard(keyboard);
-        keyboardMarkup.setResizeKeyboard(true);
-
-        sendMessage.setReplyMarkup(keyboardMarkup);
-
-        try {
-            execute(sendMessage);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }

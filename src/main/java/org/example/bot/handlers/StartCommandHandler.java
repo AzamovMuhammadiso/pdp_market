@@ -23,7 +23,7 @@ public class StartCommandHandler implements CommandHandler {
 
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
-        sendMessage.setText("Click 'Send contact' button!");
+        sendMessage.setText("Welcome");
 
 
         ReplyKeyboardMarkup keyboardMarkup = getReplyKeyboardMarkup();
